@@ -83,9 +83,16 @@
             </div>
         </nav>
         @auth
-
+        @if (session()->has("failed"))
+                        <div class="container">
+                            <div class="alert alert-danger">
+                                {{ session()->get("failed") }}
+                            </div>
+                        </div>
+                @endif
         <div class="container">
             <main class="py-4">
+                
                 <div class="row">
                     <div class="col-md-4"> 
                         <a href="{{route("discussion.create")}}" class="btn btn-info my-2" style="width: 100%; color:#FFF">create discussion </a>
@@ -120,6 +127,7 @@
                                 {{ session()->get("success") }}
                             </div>
                         @endif
+                        
                         @yield('content')
                     </div>
                 </div>
@@ -175,6 +183,7 @@
     </div>
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script> 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     @yield('js')
 </body>
 </html>

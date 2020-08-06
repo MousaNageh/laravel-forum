@@ -24,3 +24,8 @@ Route::get("/notifications","UserController@notifications")->name("notifications
 Route::resource('/discussion', 'DisscussionController'); 
 Route::middleware(["auth"])->post("discussion/{discussion}/reply}","RepliesController@create")->name("discussion.reply") ; 
 Route::middleware(["auth"])->post("discussion/{discussion}/{reply}/best-reply}","DisscussionController@reply")->name("discussion.best-reply") ;
+Route::get('login/{provider}', 'Auth\LoginController@redirectToProvider')->name("login.google");
+Route::get('login/{provider}/callback', 'Auth\LoginController@handleProviderCallback');
+Route::delete('discussion/{reply}/delete',"RepliesController@delete")->name("reply.delete");
+Route::post('discussion/{reply}/edit', "RepliesController@edit");
+Route::patch("discussion/{discussion}/{reply}/update","RepliesController@update") ; 

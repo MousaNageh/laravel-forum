@@ -8,13 +8,12 @@
             <img src="{{ Gravatar::src($discussion->owner->email)}}" alt="notfound" style="width: 40px ; height: 40px; border-radius: 50%">
             <span class="font-weight-bold"> {{ $discussion->owner->name }}</span>
         </span>
-        @auth
-                @if (auth()->user()->id == $discussion->user_id)
-                <span>
-                    <a href="#" class="btn btn-success"> edit</a>
-                    <a href="#" class="btn btn-danger"> delete</a>
-                </span>
-            @endif
+            @auth
+                    @if (auth()->user()->id == $discussion->user_id)
+                    <span>
+                        <a href="{{route("discussion.edit",$discussion->slug)}}" class="btn btn-success"> edit</a>
+                    </span>
+                @endif
             @endauth
     </div>
     <div class="card-body"> 
@@ -62,8 +61,8 @@
                 <span> 
                     @auth
                         @if (auth()->user()->id == $reply->author->id)
-                            <a href="#" class="btn btn-success btn-sm"> edit</a> 
-                            <a href="#" class="btn btn-danger btn-sm"> delete</a>
+                            <a href="#" class="btn btn-success btn-sm edit-reply" data-replyId="{{$reply->id}}" data-toggle="modal" data-target="#editReply"> edit</a> 
+                            <a href="#" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteReply"> delete </a>
                         @endif
                         @if (auth()->user()->id==$discussion->id)
                             <form action="{{ route("discussion.best-reply",
@@ -79,12 +78,36 @@
                 </span>
             </div>
             {!! $reply->content !!} 
-            
         </div>
+        <!-- Modal -->
+        <div class="modal fade" id="deleteReply" tabindex="-1" role="dialog" aria-labelledby="deleteReplyLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="deleteReplyLabel">delete reply </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                are you sure you want to delete this reply 
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <form action="{{route("reply.delete",$reply->id)}}" method="post">
+                    @csrf 
+                    @method("DELETE") 
+                    <input type="submit" value="delete" class="btn btn-danger">
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        
         @endforeach
-        <h4>read more replies</h4>
         {{$replies->links()}}
-        <form action="{{ route("discussion.reply",$discussion->slug) }}" method="POST">
+        
+        <form  method="POST" class="send-reply" action="{{ route("discussion.reply",$discussion->slug) }}">
             @csrf 
             <div class="form-group">
                 <label for="reply" class="font-italic font-weight-bold"> make reply </label> 
@@ -96,10 +119,42 @@
 
     </div>
 </div>
+    <div class="modal fade" id="editReply" tabindex="-1" role="dialog" aria-labelledby="editReplyLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="editReplyLabel">Edit reply</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <form action="" class="update-reply" method="POST">
+            @csrf 
+            @method("PATCH")
+            <div class="form-group">
+                <label for="recipient-name" class="col-form-label">edit reply :</label>
+                <input type="text" class="form-control" id="recipient-name" name="content">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Send change</button>
+            </div>
+            </form>
+        </div>
+        
+        </div>
+    </div>
+    </div>
 @endsection
 @section('js')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.3/trix.min.js"></script>    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.3/trix.min.js"></script>
+<script src="{{asset("js/reply.js")}}"></script>
+
+    
+
 @endsection
 @section('css')
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.3/trix.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.2.3/trix.min.css"> 
+
 @endsection

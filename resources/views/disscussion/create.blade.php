@@ -3,24 +3,45 @@
 @section('content')
 <div class="card">
     <div class="card-header">
-        <h3>create Discussion</h3>
+        @isset($discussion)
+            <h3> Edit Discussion</h3>
+        @else
+            <h3>create Discussion</h3>
+        @endisset
+        
     </div>
-        <form action="{{ route('discussion.store')}}" class="m-4" method="POST">
+        <form action="
+        @isset($discussion)
+            {{ route("discussion.update",$discussion->slug)}}
+        @else
+            {{ route("discussion.store") }}
+        @endisset
+        " class="m-4" method="POST">
             @csrf
+            @isset($discussion)
+            @method("PUT")
+            @endisset
             <div class="form-group">
                 <label for="title" class="font-italic font-weight-bold"> title</label> 
-                <input type="text" name="title" required class="form-control">
+                <input type="text" name="title" required class="form-control" 
+                value="@isset($discussion){{ $discussion->title}}@endisset">
             </div> 
             <div class="form-group">
                 <label for="content" class="font-italic font-weight-bold"> content</label> 
-                <input id="content" type="hidden" name="content" required>
+                <input id="content" type="hidden" name="content" value="@isset($discussion){{ $discussion->content}}@endisset" required>
                 <trix-editor input="content"></trix-editor>
             </div>
             <div class="form-group">
                 <label for="channel" class="font-italic font-weight-bold"> choose channel </label>
                 <select name="channel" id="channel" class="form-control">
                     @foreach ($channels as $channel)
-                        <option value="{{$channel->slug }}"> {{$channel->name}}</option>
+                        <option value="{{$channel->slug }}"
+                            @isset($discussion)
+                                @if ($discussion->channel_slug ==$channel->slug)
+                                    selected 
+                                @endif
+                            @endisset
+                            > {{$channel->name}}</option>
                     @endforeach
                 </select>
             </div>

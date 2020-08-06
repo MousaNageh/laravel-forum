@@ -76,9 +76,10 @@ class DisscussionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
+    public function edit(Discussion $discussion)
+    {   
+        
+        return view("disscussion.create")->with("discussion",$discussion) ; 
     }
 
     /**
@@ -88,9 +89,16 @@ class DisscussionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateDisscussionRequest $request, Discussion $discussion)
     {
-        //
+        $discussion->update([
+            "title"=>$request->title , 
+            "content"=>$request->content , 
+            "channel_slug"=>$request->channel , 
+            "slug"=>Str::slug($request->title) 
+        ]) ; 
+        session()->flash("success","discussion updated successfully . ") ; 
+        return redirect(route("discussion.show",$discussion->slug)) ; 
     }
 
     /**
@@ -99,9 +107,11 @@ class DisscussionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Discussion $discussion)
     {
-        //
+        $discussion->delete() ; 
+        session()->flash("success","discussion deleted successfully .") ; 
+        return redirect()->back() ; 
     }
     public function reply(Discussion $discussion , Reply $reply){
         $discussion->MarkAsBestReply($reply) ;
